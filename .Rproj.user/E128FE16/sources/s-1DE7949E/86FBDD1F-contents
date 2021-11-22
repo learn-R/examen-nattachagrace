@@ -1,0 +1,158 @@
+---
+title: "Hogares feminizados y presupuestos familiares"
+author: "Nattacha Benitez"
+date: "22-11-2021"
+output: 
+  html_document: 
+    highlight: pygments
+    theme: journal
+---
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+options(OutDec= ",", digits = 3)
+```
+
+##**Abstract**
+Buscando conocer y caracterizar los gastos e ingresos de los hogares de Chile es que nace la *Encuesta de Presupuestos Familiares* (EPF), dado que la encuesta se realiza cada cinco años, la base que se utilizará corresponde a la de los años 2016-2017.
+Dicha encuesta se divide en tres bases de datos, *Base de Gastos*, *Base de Personas* y *Clasificación de Consumo Individual por Finalidades (CCIF)*. Para esta breve investigación se utilizará la **Base de Personas**, la cual busca caracterizar aspectos económicos y socio-demográficos los hogares encuestados y sus integrantes. 
+En base a ello, el presente estudio busca develar las diferencias de ingresos y gastos de los hogares en relación al género de las personas.
+
+#1. Cargarmos paquetes que utilizaremos
+```{r paquetes, echo=FALSE}
+pacman::p_load(tidyverse, 
+               magrittr, 
+               sjPlot, 
+               sjmisc, 
+               srvyr,
+               survey,
+               dplyr,  
+               haven)
+
+```
+
+#2. Cargamos base de datos recortada
+```{r datos, echo=TRUE}
+
+datos_proc <- readRDS("output/data/datos_proc.rds")
+
+```
+
+## **Introducción**
+La diferencia salarial entre hombres y mujeres se constituye como una realidad en Chile y el mundo. Pero esta diferencia tiende a agravarse cuando se determina el presupuesto familiar en hogares constituidos principalmente por mujeres, dado que el ingreso es menor en relación a los hombres. 
+En base a ello, es importante considerar la diferencia que existe *a priori* en hogares con más presencia masculina que femenina, así como los hogares que tienen niños o jovenes sin edad para trabajar
+
+
+lo cual afecta directamente en la situación de pobreza de los hogares (Wajnman, 2007).
+Ante ello, es relevante revisar las diferencias de ingresos y gastos de los hogares en relación al género, considerando también variables como numero de personas que viven en el hogar y sus edades, tipo y tenencia de vivienda, nivel educativo y zona en que vive, diferenciando esta última entre el Gran Santiago y las otras capitales regionales del país. 
+
+
+
+#3. Creamos objeto encuesta
+```{r objeto_encuesta, echo=TRUE}
+presupuestos_familiares <- datos_proc %>% 
+  as_survey_design(ids = VARUNIT, 
+                   strata = VARSTRAT,
+                   weights = FE) 
+
+```
+
+#4. Calculamos media de ingreso
+```{r media_ingreso, echo=TRUE}
+presupuestos_familiares %>%
+  summarise(media_ingreso = survey_mean(ingreso_liquido, vartype = "ci", level = .95, na.rm=T))
+
+```
+
+#4.1. Calculamos media se ingreso por sexo
+```{r media_ingreso_sexo, echo=TRUE}
+presupuestos_familiares %>% 
+  group_by(sexo_cat) %>% 
+  summarise(ing_medio_S = survey_mean(ingreso_liquido, vartype = "ci", level = .95, na.rm=T))
+
+```
+
+
+# 5. Calculamos media de gastos
+
+```{r media_gastos, echo=TRUE}
+presupuestos_familiares %>% 
+  summarise(media_gastos = survey_mean(gastos, vartype = "ci", level = .95, na.rm=T))
+
+```
+
+#5.1 Calculamos media de gastos por sexo
+```{r media_gastos_sexo, echo=TRUE}
+presupuestos_familiares %>% 
+  group_by(sexo_cat) %>% 
+  summarise(gastos_S = survey_mean(gastos, vartype = "ci", level = .95, na.rm=T))
+
+```
+
+
+#6. Modelo 1 de regresión lineal
+```{r modelo_1, echo=TRUE}
+modelo1<- svyglm(gastos ~ sexo_cat + ingreso_liquido + zona_cat,
+                         family = gaussian(link = "identity"),
+                         design = presupuestos_familiares)
+
+```
+
+
+#7. Modelo 2 regresión lineal
+```{r modelo_2, echo=TRUE}
+modelo2<- svyglm(gastos ~ sexo_cat + ingreso_liquido + NPERSONAS + edad_tramos, 
+                         family = gaussian(link = "identity"),
+                         design = presupuestos_familiares)
+
+```
+
+#8. Modelo 3 regresión lineal
+```{r modelo_3, echo=TRUE}
+modelo3<- svyglm(gastos ~ sexo_cat + ingreso_liquido + vivienda_tipo + vivienda_tenencia,
+                         family = gaussian(link = "identity"),
+                         design = presupuestos_familiares)
+
+```
+
+#9. Modelo 4 regresión lineal
+```{r modelo_4, echo=TRUE}
+modelo4<- svyglm(gastos ~ sexo_cat + ingreso_liquido + N_educ,
+                         family = gaussian(link = "identity"),
+                         design = presupuestos_familiares)
+```
+
+## **Análisis**
+
+```{r tabla1, echo=TRUE}
+sjPlot::tab_model(modelo3, 
+                  show.ci=FALSE,  
+                  encoding = "UTF-8", 
+                  file = "output/figures/tab_modelo3.doc")
+```
+    
+
+```{r gráfico1, echo=TRUE}
+sjPlot::plot_model(modelo1, 
+                   ci.lvl = c(0.95), 
+                   title = "Encuesta presupuestos familiares",  
+                   show.p = T,
+                   show.values =  T,
+                   vline.color = "red")
+```
+
+```{r}
+sjPlot::tab_model(list(modelo1,modelo2,modelo3),
+  string.intercept = "(Intercepto)",
+  string.pred = "Predictores",
+  p.style = "stars",
+  show.ci = FALSE,
+  collapse.ci = T,
+  digits = 3,
+  dv.labels = c("Modelo 1", "Modelo 2","Modelo 3"),
+  show.reflvl = TRUE,
+  encoding = "UTF-8",
+  lang = "es")
+```
+
+## **Conclusión**
+
+## **Referencias**
