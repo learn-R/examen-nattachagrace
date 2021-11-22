@@ -1,0 +1,4 @@
+"0","modelo1 <- lm(cuidarse ~ riesgo_cont + trabaja + edad, weights= factor_expansion, data = datos_proc)"
+"0",""
+"0","modelo2 <- lm(cuidarse ~ riesgo + trabaja + edad, weights = factor_expansion, data = datos_proc)"
+"0",""

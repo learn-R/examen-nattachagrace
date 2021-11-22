@@ -1,0 +1,4 @@
+"0","modelo1<- svyglm(gastos ~ sexo_cat + ingreso_liquido,"
+"0","                         family = gaussian(link = ""identity""),"
+"0","                         design = presupuestos_familiares)"
+"0",""

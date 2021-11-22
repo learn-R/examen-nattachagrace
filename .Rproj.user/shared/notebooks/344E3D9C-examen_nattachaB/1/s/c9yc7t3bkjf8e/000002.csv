@@ -1,0 +1,2 @@
+"0","presupuestos_familiares %>% "
+"0","  summarise(media_gastos = survey_mean(gastos, vartype = ""ci"", level = .95, na.rm=T))"
