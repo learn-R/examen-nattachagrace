@@ -1,0 +1,6 @@
+"0","sjPlot::tab_model(modelo5, "
+"0","                  show.ci=FALSE,"
+"0","                  title = ""EPF por nivel educacional"","
+"0","                  encoding = ""UTF-8"","
+"0","                  p.val = ""wald"","
+"0","                  file = ""output/figures/tab_modelo5.doc"")"

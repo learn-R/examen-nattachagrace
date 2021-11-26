@@ -1,0 +1,5 @@
+"0","presupuestos_familiares <- datos_proc %>% "
+"0","  as_survey_design(ids = VARUNIT, "
+"0","                   strata = VARSTRAT,"
+"0","                   weights = FE) "
+"0",""

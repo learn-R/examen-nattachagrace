@@ -1,0 +1,3 @@
+"0","presupuestos_familiares %>% "
+"0","  group_by(sexo_cat) %>% "
+"0","  summarise(gastos_S = survey_mean(gastos, vartype = ""ci"", level = .95, na.rm=T))"

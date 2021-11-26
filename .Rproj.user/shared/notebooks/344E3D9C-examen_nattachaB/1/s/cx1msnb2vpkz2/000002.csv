@@ -1,0 +1,2 @@
+"0","presupuestos_familiares %>%"
+"0","  summarise(media_ingreso = survey_mean(ingreso_liquido, vartype = ""ci"", level = .95, na.rm=T))"

@@ -1,0 +1,7 @@
+"0","datos_proc %>%"
+"0","select(cuidarse, riesgo_cont) %>% "
+"0","tab_corr(.,"
+"0","         triangle = ""lower"",   "
+"0","         title = ""Tabla 1 Matriz de correlación"","
+"0","         encoding = ""UTF-8"", "
+"0","         file = ""output/figures/tabla_correlacion.doc"")"
